@@ -1,0 +1,36 @@
+1. Статистика по дням:
+
+SELECT
+    date,
+    count() as events_count,
+    countIf(event = 'показ') as shows_count,
+    countIf(event = 'клик') as clicks_count,
+    uniqExact(ad_id) as unique_ads_count,
+    uniqExact(campaign_union_id) as unique_campaigns_count
+FROM
+    ads_data
+GROUP BY
+    date
+ORDER BY
+    date ASC
+
+
+2. Объявления по которым показ произошел после клика:
+
+SELECT
+    ad_id
+FROM
+    ads_data
+WHERE
+    event = 'показ' AND
+    (ad_id, client_union_id, campaign_union_id) IN (
+        SELECT
+            ad_id,
+            client_union_id,
+            campaign_union_id
+        FROM
+            ads_data
+        WHERE
+            event = 'клик'
+    )
+
